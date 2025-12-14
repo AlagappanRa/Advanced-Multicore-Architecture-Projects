@@ -1,0 +1,63 @@
+
+
+
+RANTEXT(1-SPEC)   MISC. REFERENCE MANUAL PAGES    RANTEXT(1-SPEC)
+
+
+
+NNNNAAAAMMMMEEEE
+     rantext - generate a file of text characters  with  weighted
+     distribution
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     rrrraaaannnntttteeeexxxxtttt size file
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     _R_a_n_t_e_x_t generates a file _f_i_l_e which is  _s_i_z_e  characters  in
+     length.   The distribution weighting is based upon an inter-
+     nal table.  The table is built by textcount and  asciicount.
+     The frequencies are for pairs of characters.
+
+EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+     rantext 2000000 abc
+          will create a file of  two  million  characters  called
+          abc.
+
+BBBBUUUUGGGGSSSS
+     There is no ANSI method of querying for the amount of  space
+     left on the disk.  It would be nice to find out if there are
+     _s_i_z_e bytes on the disk before attempting to create the file.
+
+AAAAUUUUTTTTHHHHOOOORRRR
+     Brian Lanier/Robert Novak
+
+CCCCOOOOPPPPYYYYRRRRIIIIGGGGHHHHTTTT
+     None, we release this to the public domain
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     asciicount(1-SPEC), textcount(1-SPEC)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Unix System LaboratoriesLast change: SPEC                       1
+
+
+

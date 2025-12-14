@@ -1,0 +1,220 @@
+\" To create plain text version of this document, use <troff>"
+.\" John Freeman, CDC. Last Modified 10/23/91.
+.ps 18
+.de NP
+'bp
+'sp 0.5i
+.tl ''%''
+.sp 0.3i
+..
+.wh -1i NP
+.sp 4
+.vs 17p
+.po +.25i
+.ce 1
+\fB026.Compress Description
+.sp
+.ps 12
+\fB1.  GENERAL
+.br
+1.1.  Description\fR
+.in +4
+Compress reduces the size of the named files using adaptive
+Lempel-Ziv coding.  Whenever possible, each files is replaced
+by one with the extension \fI.Z\fR. If no files are specified,
+standard input is compressed to standard output.  Compressed
+files can be restored to their original form using Uncompress.
+.br
+The amount of compression obtained depends upon the size of
+the input, the number of bits per character, and the distri-
+bution of common substrings.  Typically, text such as source
+code or English is reduced by 50-60%.  Compression is generally
+better than \fIpack\fR (Huffman coding) or \fIcompact\fR (adaptive Huffman)
+and takes less time to compute.
+.in -4
+\fB1.2  Authors\fR
+.in +4
+Spencer W. Thomas, Jim McKie, Steve Davies, Ken Turkowski,
+James A. Woods, Joe Orost.
+.in -4
+\fB1.3  Version/Date\fR
+.in +4
+Version 4, Revision 1.3; Dated 07/18/90.
+.in -4
+\fB1.4  Classification\fR
+.in +4
+026.Compress is a CPU intensive integer benchmark with a
+significant I/O component.
+.in -4
+\fB1.5  Application Category\fR
+.in +4
+System Utility
+.in -4
+\fB1.6  Justification
+.in +4
+Compression and decompression programs are employed in a wide
+variety of applications which require storage and/or transmission
+of large text files.
+.br
+The vast majority of earlier SPEC benchmarks fell into the
+categories of engineering or scientific applications and performed
+trivial amounts of input/output.  This benchmark should be of interest
+to many users who are not particularlly interested in the performance
+of CPU intensive engineering and scientific codes.
+.in -4
+.sp
+\fB2.  PERFORMANCE\fR
+.br
+\fB2.1.  Metrics\fR
+.in +4
+The metric used is the elapsed (real) time as output by \fIbin/time\fR.
+.in -4
+\fB2.2.  Elapsed Time\fR
+.in +4
+The reference time (DEC VAX 11/780), used to compute a SPEC ratio, is
+2770 seconds (to 3 sig.fig.).
+.in -4
+\fB2.3.  Reports\fR
+.in +4
+The output of \fI/bin/time\fR is directed to a file called \fItime.out\fR.
+.in -4
+\fB2.4  Additional Performance Considerations\fR
+.in +4
+Variations of the elapsed time between runs should not be more than 5%
+under normal circumstances. This benchmark should be run on an idle
+machine or one in single-user mode since elapsed time is sensitive
+to other activities on the machine.  In contrast to other benchmarks
+in this suite, particular attention should be given to the disk configuration
+of the target system.  Elapsed time may be improved by higher
+performance disks, \fIstriped\fR file systems, larger buffer caches, etc.
+.br
+The benchmark exhibits very high code locality and is not very sensitive
+to instruction cache size.  One 32KB direct-mapped cache had a miss
+ratio of less than one half of one percent.  On the other hand, the
+benchmark is quite sensitive to data cache size; with miss ratios
+of eleven percent at 64KB and four percent at 256KB.              .
+.in -4
+.sp
+\fB3.  SOFTWARE\fR
+.br
+\fB3.1  Language\fR
+.in +4
+Compress consists of approximately 1500 lines of source code, all
+written in the C Language.
+.in -4
+\fB3.2  Operating System\fR
+.in +4
+The benchmark runs on a variety of UNIX-based systems.
+.in -4
+\fB3.3  Portability\fR
+.in +4
+The benchmark has been run on both 4.3 BSD and System V based
+machines.
+.in -4
+\fB3.4  Vectorizability/Multi-Processor Issues\fR
+.in +4
+The benchmark contains no floating point or array-valued
+calculations and is single-threaded.  Dual processors may
+outperform comparable uniprocessors.
+.in -4
+\fB3.5  Miscellaneous Software\fR
+.in +4
+None required.
+.in -4
+\fB3.6  Known Bugs\fR
+.in +4
+Compressed files are compatible between machines.
+However, "-b12' should be used for file transfers
+to architectures with a small process data space
+(64KB or less) such as DEC PDP Series or Intel 80286.
+.in -4
+\fB3.7  Additional Software Considerations\fR
+.in +4
+None.
+.in -4
+\fB3.8  Benchmark History
+.in +4
+Compress uses the modified Lempel-Ziv algorithm popularized
+in "A Technique for High Performance Data Compression",
+Terry A. Welch, IEEE Computer, vol 17, no. 6  (June 1984),
+pp. 8-19.  The initial version became available in August
+of 1984.  Please refer to the modification history contained
+in the source file 'compress.c' for details.
+.in -4
+.sp
+\fB4.  HARDWARE\fR
+.br
+\fB4.1  Memory\fR
+.in +4
+The static code size for the benchmark is approximately 50KB.
+Relevent data size is approximately 500KB.  The benchmark has
+been run on systems as small as 4MB.  However, the amount and
+extent to which memory can be used to support disk caching can
+have a significant impact on elapsed time.
+.in -4
+\fB4.2  Disks\fR
+.in +4
+As mentioned earlier, this benchmark contains a significant I/O
+component.  An initial input file of 1MB is compressed and
+uncompressed twenty times.  High performance disks supported by
+large caches will most likely produce the best results.
+.in -4
+\fB4.3  Communication\fR
+.in +4
+None.
+.in -4
+\fB4.4  Special Hardware\fR
+.in +4
+None.
+.in -4
+\fB4.5  Additional Hardware Considerations\fR
+.in +4
+None
+.in -4
+.sp
+.bp
+\fB5.  OPERATIONAL\fR
+.br
+\fB5.1  Disk Space\fR
+.in +4
+Total disk space required is < 4MB. Size of the executables is about
+150KB.
+.in -4
+\fB5.2  Installation\fR
+.in +4
+No special installation procedures required.  Compile
+at the highest level of optimization possible.
+.in -4
+\fB5.3  Execution\fR
+.in +4
+1) The input file is copied to the execution directory prior to the
+start of the timed portion.  2)  Twenty iterations, each consisting 
+of a compress/uncompress operation pair, are performed.  The input
+of each iteration is the output of the previous iteration.  3)
+Verification, as described below, is performed.  4) In contrast to
+most SPEC benchmarks, 026.compress produces no \fIresult.out\fR or
+other output file.
+.in -4
+\fB5.4  Correctness Verification\fR
+.in +4
+Correctness validation is performed as follows:
+.br
+At each iteration of the compress/uncompress procedure, a
+character string of the form \fIstepnn\fR appended to the
+file being operated upon.  At conclusion the final decompressed
+file is compared to the original (included in the benchmark
+materials).  They must be identical with the exception
+of the strings added at each of the twenty iterations.
+.in -4
+\fB5.5  Additional Operational Considerations\fR
+.in +4
+A \fIshort\fR target is available in the Makefile.  As opposed to
+twenty iterations through a file of 1MB, six iterations on
+a file of 100KB are performed.  This allows one to verify
+the installation on a system with very limited disk space.
+.in -4
+\fB5.6 Sample Run\fR
+.in +4
+At the conclusion of a successful run the only output should
+be that of the \fIbin/time\fR command.
+.in -4

@@ -1,0 +1,166 @@
+
+
+
+
+                    GCC Benchmark Specifications
+
+
+  1.  GENERAL
+  1.1.  Classification
+      gcc is a CPU intensive integer benchmark written  in  C.   
+  1.2  Description
+      gcc is based on the GNU C compiler version 2.5.3  distributed
+      by  the  Free Software Foundation. The benchmark measures the
+      time it takes for the GNU C compiler to convert a  number  of
+      its  pre-processed source files into optimized Sparc assembly
+      language (.s files) output.
+  1.3  Source/Author
+      The gcc benchmark is sponsored by Digital Equipment  Corpora-
+      tion.  It  is derived from the GNU C compiler written princi-
+      pally by Richard Stallman of the Free Software Foundation.
+  1.4  Version/Date
+      Benchmark Version 1.0,    Date Nov-1993.
+  1.5  Other Information
+      The benchmark unloads  from  tape  into  a  directory  called
+      126.gcc.   This  benchmark  has  been  tested on a DECstation
+      3000/500  machine. 
+
+  2.  PERFORMANCE
+  2.1.  Metrics
+      The metric used is the  elapsed  (real)  time  as  output  by
+      /bin/time.  This is the time that the GNU C compiler takes to
+      compile 25 pre-processed source files into assembly files.
+  2.2.  Elapsed Time
+      As above. The SPEC reference time (to 3 sig. fig.)  is  <unk-
+      nown> seconds.
+  2.3.  Reports
+      The output of /bin/time is directed to  result/time.out.  The
+      benchmark creates a number of assembly language output files.
+      These output files are  compared  with  a  set  of  reference
+      files.
+
+
+
+
+                                  2
+
+
+  2.4  Additional Performance Considerations
+      gcc is mainly an integer benchmark.  However, it does contain
+      a  small  amount of I/O and floating point computation. 
+
+  3.  SOFTWARE
+  3.1  Language
+      The gcc benchmark is written in C.
+  3.2  Operating System
+      The benchmark has been run  on an OSF1 based operating systems.
+  3.3  Portability
+      Installation of the GNU C compiler is system  dependent.   We
+      have  minimized the amount of reconfiguration required to run
+      the benchmark on different machines and operating systems.
+      The native compilers on some machines may not be able to com-
+      pile  the GNU C compiler without a change in the source code.
+  3.4  Vectorizability/Multi-Processor Issues
+      gcc code is not believed to be easily vectorizable.
+  3.5  Miscellaneous Software
+      The benchmark requires the presence  of  the  Unix  utilities
+      cat, cp, diff, ln, rm, mv, sh and time.
+  3.6  Known Bugs
+      Since this benchmark is highly system dependent, it may  fail
+      on  some  machines.   We have attempted to fix most problems,
+      however, not all warning messages have been suppressed.
+  3.7  Additional Software Considerations
+      None.
+
+
+
+
+
+                                  3
+
+
+  4.  HARDWARE
+  4.1  Memory
+      The dynamic memory requirements of this  benchmark  have  not
+      been  ascertained.  The static size of the executable modules
+      gcc and cc1 on a DECsystem 3000/500 are approximately as fol-
+      lows:
+
+      hostname% size cc1
+      text    data    bss     dec     hex
+      1236992 167936  44992   1449920 161fc0  cc1
+
+  4.2  Disks
+      No special requirements.
+  4.3  Communication
+      None.
+  4.4  Special Hardware
+      None.
+  4.5  Additional Hardware Considerations
+      None
+
+  5.  OPERATIONAL
+  5.1  Disk Space
+      gcc takes up about 11 MB of space on  tape.  The  compilation
+      expands  this  to about 30 MB of disk space, with source, ob-
+      jects and executables.
+
+	du 
+	2       ./result
+	762     ./input.train
+	38      ./input.test
+	880     ./result.train
+	56      ./result.test
+	3246    ./input.ref
+	3792    ./result.ref
+	12848   ./src.std
+	2       ./src.alt
+	34618   .
+
+
+
+
+                                  4
+
+
+  5.2  Installation
+      Extract  using  tar.  There  is  a  generic  Makefile  called
+      Makefile, which generally conforms to the usual SPEC Makefile
+      conventions.
+  5.3  Execution
+      To execute the benchmark type the following  (substitute  the
+      appropriate name in place of <vendor>):
+
+      hostname% cd 126.gcc
+      hostname% make -f M.<vendor> run
+
+      The makefile will compile the benchmark if necessary and then
+      run  it.   It will create a directory called result and store
+      the timing output in a file called  time.out.  The  benchmark
+      will  also  create  a  number of Sun-3 assembly language (.s)
+      files in the result directory.  If the target  run  is  elim-
+      inated  from  the make command-line arguement above, the make
+      command will compile, run and validate the benchmark.
+  5.4  Correctness Verification
+      To verify the benchmark type:
+
+      hostname% make -f M.<vendor> compare
+
+      This will compare the assembly  files  in  result  against  a
+      reference  set  in result.ref. Any differences will be output
+      to the screen.
+  5.5  Additional Operational Considerations
+      None.
+  5.6  Sample Run
+      This is a sample run of gcc on a DEC machine (slightly edited
+      for readability):
+
+      hostname% make -f M.aosf
+	make SHELL="/bin/sh" FC="f77" CC="cc" OPT="-O2"  SPECIN="ref" SPECOUT="ref"  OBJ="o" OBJOPT="-c" EXTRA_CFLAGS="-Olimit 2500 -unsigned"  EXTRA_FFLAGS="" EXTRA_LDFLAGS="-unsigned -non_shared"  EXTRA_LIBS="-lsys5" validate
+
+	Thu Jun 16 11:54:06 EDT 1994
+	Running 126.gcc: Input=ref Output=ref
+	126.gcc: BENCHMARK COMPLETED SUCCESSFULLY
+	126.gcc: Elapsed Time: 276.1
+	Thu Jun 16 11:58:47 EDT 1994
+

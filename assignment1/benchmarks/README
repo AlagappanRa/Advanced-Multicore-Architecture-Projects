@@ -1,0 +1,17 @@
+TO RUN THE BENCHMARKS: 
+
+GCC:
+
+  to run:               sim-safe cc1.ss -O 1stmt.i
+  to test output:       diff 1stmt.s 1stmt.s.ref
+
+COMPRESS95:
+
+  to run:               sim-safe compress95.ss < compress95.in > compress95.out
+  to test output:       diff compress95.out compress95.out.ref
+
+GO:
+
+  to run:               sim-safe go.ss 50 9 2stone9.in > go.out
+  to test output:       diff go.out go.out.ref
+

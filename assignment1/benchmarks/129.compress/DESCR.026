@@ -1,0 +1,168 @@
+
+
+
+
+
+
+
+                        026.Compress Description
+
+      1.  GENERAL
+    1.1.  Description
+        Compress reduces the size of the named files  using  adaptive
+        Lempel-Ziv coding.  Whenever possible, each files is replaced
+        by one with the extension ._Z.  If  no  files  are  specified,
+        standard  input is compressed to standard output.  Compressed
+        files can be  restored  to  their  original  form  using  Un-
+        compress.
+        The amount of compression obtained depends upon the  size  of
+        the  input, the number of bits per character, and the distri-
+        bution of common substrings.  Typically, text such as  source
+        code  or  English  is reduced by 50-60%.  Compression is gen-
+        erally better than _p_a_c_k (Huffman coding) or _c_o_m_p_a_c_t (adaptive
+        Huffman) and takes less time to compute.
+    1.2  Authors
+        Spencer W. Thomas, Jim McKie, Steve  Davies,  Ken  Turkowski,
+        James A. Woods, Joe Orost.
+    1.3  Version/Date
+        Version 4, Revision 1.3; Dated 07/18/90.
+    1.4  Classification
+        026.Compress is a CPU intensive integer benchmark with a sig-
+        nificant I/O component.
+    1.5  Application Category
+        System Utility
+    1.6  Justification
+        Compression and decompression programs are employed in a wide
+        variety   of   applications   which  require  storage  and/or
+        transmission of large text files.
+        The vast majority of earlier SPEC benchmarks  fell  into  the
+        categories of engineering or scientific applications and per-
+        formed  trivial  amounts  of  input/output.   This  benchmark
+        should be of interest to many users who are not particularlly
+        interested in the performance of  CPU  intensive  engineering
+        and scientific codes.
+
+    2.  PERFORMANCE
+    2.1.  Metrics
+        The metric used is the  elapsed  (real)  time  as  output  by
+        _b_i_n/_t_i_m_e.
+    2.2.  Elapsed Time
+        The reference time (DEC VAX 11/780), used to compute  a  SPEC
+        ratio, is 2770 seconds (to 3 sig. fig.).
+    2.3.  Reports
+        The  output  of  /_b_i_n/_t_i_m_e  is  directed  to  a  file  called
+        _t_i_m_e._o_u_t.
+
+
+
+
+
+
+
+    2.4  Additional Performance Considerations
+        Variations of the elapsed time between  runs  should  not  be
+        more  than  5%  under  normal  circumstances.  This benchmark
+        should be run on an idle machine or one in  single-user  mode
+        since  elapsed  time  is sensitive to other activities on the
+        machine.  In contrast to other benchmarks in this suite, par-
+        ticular  attention  should be given to the disk configuration
+        of the target system.  Elapsed time may be improved by higher
+        performance   disks,  _s_t_r_i_p_e_d  file  systems,  larger  buffer
+        caches, etc.
+        The benchmark exhibits very high code  locality  and  is  not
+        very  sensitive  to instruction cache size.  One 32KB direct-
+        mapped cache had a miss ratio of less than one  half  of  one
+        percent.  On the other hand, the benchmark is quite sensitive
+        to data cache size; with miss ratios  of  eleven  percent  at
+        64KB and four percent at 256KB.              .
+
+      3.  SOFTWARE
+    3.1  Language
+        Compress consists of approximately 1500 lines of source code,
+        all written in the C Language.
+    3.2  Operating System
+        The benchmark runs on a variety of UNIX-based systems.
+    3.3  Portability
+        The benchmark has been run on both 4.3 BSD and System V based
+        machines.
+    3.4  Vectorizability/Multi-Processor Issues
+        The benchmark contains no floating point or array-valued cal-
+        culations  and  is single-threaded.  Dual processors may out-
+        perform comparable uniprocessors.
+    3.5  Miscellaneous Software
+        None required.
+    3.6  Known Bugs
+        Compressed files are compatible between  machines.   However,
+        "-b12'  should  be  used  for file transfers to architectures
+        with a small process data space (64KB or less)  such  as  DEC
+        PDP Series or Intel 80286.
+    3.7  Additional Software Considerations
+        None.
+    3.8  Benchmark History
+        Compress uses the modified Lempel-Ziv  algorithm  popularized
+        in "A Technique for High Performance Data Compression", Terry
+        A. Welch, IEEE Computer, vol 17, no. 6  (June 1984),  pp.  8-
+        19.   The initial version became available in August of 1984.
+        Please refer to the modification  history  contained  in  the
+        source file 'compress.c' for details.
+
+
+
+
+
+
+
+      4.  HARDWARE
+    4.1  Memory
+        The static code size for the benchmark is approximately 50KB.
+        Relevent data size is approximately 500KB.  The benchmark has
+        been run on systems as small as 4MB.  However, the amount and
+        extent  to  which  memory can be used to support disk caching
+        can have a significant impact on elapsed time.
+    4.2  Disks
+        As mentioned earlier, this benchmark contains  a  significant
+        I/O  component.   An  initial input file of 1MB is compressed
+        and uncompressed twenty times.  High performance  disks  sup-
+        ported  by   large  caches  will  most likely produce the best
+        results.
+    4.3  Communication
+        None.
+    4.4  Special Hardware
+        None.
+    4.5  Additional Hardware Considerations
+        None
+
+
+
+    5.  OPERATIONAL
+    5.1  Disk Space
+        Total disk space required is < 4MB. Size of  the  executables
+        is about 150KB.
+    5.2  Installation
+        No special installation procedures required.  Compile at  the
+        highest level of optimization possible.
+    5.3  Execution
+        1) The input file is copied to the execution directory  prior
+        to  the  start  of the timed portion.  2)  Twenty iterations,
+        each consisting of a compress/uncompress operation pair,  are
+        performed.   The input of each iteration is the output of the
+        previous iteration.  3) Verification, as described below,  is
+        performed.    4)   In   contrast  to  most  SPEC  benchmarks,
+        026.compress produces no _r_e_s_u_l_t._o_u_t or other output file.
+    5.4  Correctness Verification
+        Correctness validation is performed as follows:
+        At each iteration of  the  compress/uncompress  procedure,  a
+        character  string of the form _s_t_e_p_n_n appended to the file be-
+        ing operated upon.  At conclusion the final decompressed file
+        is  compared  to  the original (included in the benchmark ma-
+        terials).  They must be identical with the exception  of  the
+        strings added at each of the twenty iterations.
+    5.5  Additional Operational Considerations
+        A _s_h_o_r_t target is available in the Makefile.  As  opposed  to
+        twenty  iterations through a file of 1MB, six iterations on a
+        file of 100KB are performed.  This allows one to  verify  the
+        installation on a system with very limited disk space.
+    5.6 Sample Run
+        At the conclusion of a successful run the only output  should
+        be that of the _b_i_n/_t_i_m_e command.
+

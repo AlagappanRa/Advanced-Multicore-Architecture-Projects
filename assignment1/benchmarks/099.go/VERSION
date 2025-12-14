@@ -1,0 +1,95 @@
+Changes made to prepare Go source code for use as a SPEC benchmark:
+
+1)  Added range check to g25.c:otherweakconn() to prevent index out of range.
+Some systems compilers generated code that would segment violate...
+	BEFORE:
+		s = list[cnptr[cn]];
+		if(lnbn[s] > 1)return(TRUE);
+	AFTER:
+		s = list[cnptr[cn]];
+		if(s <= NUMSQUARES && lnbn[s] > 1)return(TRUE);
+
+
+2)  Changed from using 'char' to using 'int' for many structures.
+ANSI C does not define if a 'char' is signed or not and code uses values<0.
+Conversion to int for all non-string variables was the easiest solution.
+
+
+3)  Added input parameter (argv[1]) to be used as the value to "fixplaylevel()"
+The default value was 40.  Now we can vary the level between 1 and 100 where
+10 and under runs very fast, and above 50 seems to add more time linearly
+while the searches for the best move get more involved.
+
+
+4)  Added input parameter (argv[2]) to be used as the value for "boardsize",
+thus enabling the use of greater than a 19x19 board.  Required the increase
+of a few constants: NUMSQUARES, NUMGROUPS, NUMMOVES, MAXMOVE, NUMARMIES, and
+NUMPOTENTIAL in g2def.h so that a few arrays would handle the longer games.
+
+
+5)  Fixed a couple of minor nested comments (not in strict ANSI C) in g2.c
+
+
+6)  Fixed an uninitialized "int grp[4]" at line 283 in g28.c.
+
+
+7)  Fixed an inconsistency in declarations of the "edge" and "edge2" arrays.
+The "g2hd.h" file listed them with size of "NUMSQUARES", but were defined in
+"g2.c" as "NUMSQUARES+1".
+
+
+8)  Made a hack to solve problem with indexing into 26 element arrays
+using values from gralive[] which had high order bits set (these bits
+were set to represent ongoing analysis [undercuts, etc] and should be
+turned off before using as an index into an "aliveness" based array).
+Changed all indexings in "g23.c" that used gralive[] values, based on
+examples found in "g2s2.c" file -- use a "&31" mask.
+
+9) ANSIfied all procedure defintions.
+
+10) Added '#include <stdlib.h>' where necessary to define 'abs()'
+
+11) changed name of local variable 'startalive' to 'startaliv' at g23.c:615
+to avoid potential conflict with a function of the same name.
+
+12) changed name of local variable 'newalive' to 'newaliv' at g25.c:472
+to avoid potential conflict with a function of the same name.
+
+13) g25.c:1104 removed local definition of 'ataiflag' so that function
+sets the value of the global variable by the same name (not that either
+definition is read anywhere in the code...).
+
+14) g25.c:1725 changed the name of 'bestpot' to 'bstpot' to avoid potential
+conflict with a function of the same name.
+
+15) g29.c changed the names of 'tm' to 'ctm' in several arguement lists
+to avoid potential conflict with a global variable of the same name.
+
+16) g29.c changed the names of locally defined 'mvp' to 'mvp2' to avoid
+potential conflicts with a globally defined 'mvp'.
+
+17) g2eye.c changed the name of local variable 'cntlist' to 'countlist'
+to avoid a potential conflict with a function name 'cntlist'.
+
+18) g2jos.c changed the name of local variable 'incorner' to 'inacorner'
+to avoid a potential conflict with a function with the same name.
+
+19) g2shp.c changed the name of local variable 'eyeval' to 'eyeval2'
+to avoid a potential conflict with a function with the same name.
+
+20) messed with the workload files to solve runtime issue for IBM
+and to reduce size of workload for 'train'
+
+21) changed definition of main() in g2.c to return int, not void
+
+22) fixed potential problem with unitialized variable in g29.c
+the array val[2] in atktwolibs() at line 1239
+
+23) fixed collision in names with array link[] as defined in g2hd.h
+(renamed the array 'links[]').
+
+24) changed floating point arithmetic in g23.c to fixed point
+changed distance calculation to use integer division, not float multiply
+changed "alive" values in rtavlive[] arrays from doubles to integer %s
+changes mostly affected lines 3457 and 3462 in g23.c
+

@@ -1,0 +1,33 @@
+Benchmark name: 026.compress
+Date of last modification: 10/10/91
+New run required by modification: No 
+
+Log:
+
+4/91	Jeff Reilly - Start of log.
+
+8/7/91	Walter Bays
+	Experimental version (smaller, multi-pass, realistic compression)
+	made official, but still has stripped-down Makefile.
+
+8/8/91  David Neff
+	All known bugs fixed, specifically:
+	o Now using Jack/Pasad's quieter Makefile/Makefile.debug setup.  Thus,
+	  o No longer creates unnecessary 30Mb file.
+	  o Follows mount/umount conventions, for better or worse.
+	  o compress/uncompress run with explicit path for root.
+	o Default changed to ENMNT = NONE
+	o result.{short,ref}/result.out now exists (empty).
+	o Obsolete files deleted (both from experiment and from earlier
+	  version).
+	o Since input/result file is so much shorter (1Mb for ref), compare
+	  entire file instead of head, tail, CRC.
+
+10/10/91	Jeff Reilly
+		Removed README3.0
+		Moved README --> COMPRESS.NOTES, compress.1 --> COMPRESS.1
+
+10/20/91	Jeff Reilly, J. Freeman
+		Added DESCR*, ARTICLE*
+
+
