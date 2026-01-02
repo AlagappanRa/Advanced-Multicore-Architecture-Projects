@@ -1,6 +1,8 @@
 #include "mesi_protocol.h"
 #include "dragon_protocol.h"
 #include "mesif_protocol.h"
+#include "mesi_smart.h"
+#include "moesi_protocol.h"
 
 #include <iostream>
 #include <string>
@@ -116,9 +118,13 @@ public:
             protocol = std::make_unique<Dragon::DragonProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
         } else if (proto == "MESIF") {
             protocol = std::make_unique<MESIF::MESIFProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
+        }  else if (proto == "MESI_SMART_LRU") {
+            protocol = std::make_unique<MESI_SMART::MESISmartProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
+        } else if (proto == "MOESI") {
+            protocol = std::make_unique<MOESI::MOESIProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
         }
         else {
-            throw std::runtime_error("Unknown protocol: " + proto);
+            throw std::runtime_error("Unknown protocol: " + proto + "; \nAccepted: MESI DRAGON MESIF MESI_SMART_LRU MOESI");
         }
     }
 

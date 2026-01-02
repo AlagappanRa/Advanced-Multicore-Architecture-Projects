@@ -18,9 +18,6 @@ namespace MESIF {
         MESIFState state = MESIFState::INVALID;
     };
 
-    // ============================================================================
-    // LRU CACHE SET (Identical logic)
-    // ============================================================================
     class LRUCacheSet {
         int assoc;
         std::list<uint32_t> lru_order;
@@ -76,9 +73,6 @@ namespace MESIF {
         }
     };
 
-    // ============================================================================
-    // MESIF PROTOCOL IMPLEMENTATION
-    // ============================================================================
     class MESIFProtocol : public CoherenceProtocol {
     private:
         std::vector<MESIFCache> caches;
@@ -92,9 +86,6 @@ namespace MESIF {
             for (int i = 0; i < n; i++) caches.emplace_back(cs, as, bs);
         }
 
-        // ------------------------------------------------------------------------
-        // PROCESSOR REQUEST
-        // ------------------------------------------------------------------------
         ProtocolResponse handle_processor_request(int id, uint32_t addr, bool is_write) override {
             CacheLine* line = caches[id].get_line(addr);
 
@@ -121,9 +112,6 @@ namespace MESIF {
             return { false, is_write ? BusTransactionType::BUS_RDX : BusTransactionType::BUS_RD };
         }
 
-        // ------------------------------------------------------------------------
-        // BUS TRANSACTION (The Core Optimization Logic)
-        // ------------------------------------------------------------------------
         int handle_bus_transaction(int req_id, BusTransactionType type, uint32_t addr) override {
             bool shared_signal = false;
             bool supplier_found = false; // Does a specific cache (M, E, F) supply data?
