@@ -17,6 +17,7 @@ This repository contains two rigorous systems engineering projects focusing on t
 
 ### Objective
 To architect a trace-driven, discrete-event simulator capable of modeling memory consistency and bus arbitration in a multi-core processor environment. The goal was to analyze the trade-offs between **Invalidation-based (MESI)** and **Update-based (Dragon)** protocols under varying workload characteristics.
+
 ![Architecture Diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/hardware_diagram.svg)
 
 ### System Architecture
@@ -25,6 +26,7 @@ The simulator models a 4-core system with the following specifications:
 *   **Memory Hierarchy:** Private L1 Data Caches (Write-Back/Write-Allocate) backed by Main Memory.
 *   **Interconnect:** Shared Bus with FIFO arbitration and atomic transactions.
 *   **Simulation Engine:** Custom C++ event queue handling `InstructionFetch`, `MemoryAccess`, `BusTransaction`, and `coherence` events.
+
 ![Implementation diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.svg)
 
 ### Key Implementations
