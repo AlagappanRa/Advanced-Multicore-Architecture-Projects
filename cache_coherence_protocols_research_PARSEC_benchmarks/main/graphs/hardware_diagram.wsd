@@ -1,0 +1,58 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam linetype ortho
+
+title Simulated 4-Core SMP Architecture
+
+package "Processor Nodes" {
+    component "Core 0" as C0
+    component "L1 Cache 0" as L1_0
+    
+    component "Core 1" as C1
+    component "L1 Cache 1" as L1_1
+    
+    component "Core 2" as C2
+    component "L1 Cache 2" as L1_2
+    
+    component "Core 3" as C3
+    component "L1 Cache 3" as L1_3
+}
+
+node "Interconnect" {
+    interface "Shared Bus\n(Atomic, FCFS Arbitration)" as BUS
+}
+
+database "Main Memory\n(DRAM)" as DRAM
+
+' Internal Connections (Core to Cache)
+C0 <--> L1_0 : "Load/Store\n(Blocking)"
+C1 <--> L1_1 : "Load/Store\n(Blocking)"
+C2 <--> L1_2 : "Load/Store\n(Blocking)"
+C3 <--> L1_3 : "Load/Store\n(Blocking)"
+
+' Connections to Bus (Coherence Traffic)
+L1_0 <--> BUS : "BusRd / BusRdX / Snoop"
+L1_1 <--> BUS : "BusRd / BusRdX / Snoop"
+L1_2 <--> BUS : "BusRd / BusRdX / Snoop"
+L1_3 <--> BUS : "BusRd / BusRdX / Snoop"
+
+' Connection to Memory
+BUS <--> DRAM : "Block Fetch / Writeback\n(100 Cycles)"
+
+note right of L1_3
+  <b>L1 Configuration</b>
+  - Size: 4KB
+  - Assoc: 2-Way
+  - Block: 32B
+  - States: MESI/Dragon
+end note
+
+note bottom of BUS
+  <b>Bus Logic</b>
+  - Serialized Transactions
+  - Cache-to-Cache Transfer: 17 Cycles
+  - Broadcasts to all L1s
+end note
+
+@enduml

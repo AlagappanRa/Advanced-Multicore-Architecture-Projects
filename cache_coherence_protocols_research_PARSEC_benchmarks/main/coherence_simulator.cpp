@@ -15,6 +15,9 @@
 #include <iomanip>
 
 // #define ENABLE_DEBUG 1
+#ifndef READ_PRIORITY
+#define READ_PRIORITY 0
+#endif
 
 void debug_log(uint64_t time, const std::string& msg) {
     #if ENABLE_DEBUG
@@ -118,13 +121,13 @@ public:
             protocol = std::make_unique<Dragon::DragonProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
         } else if (proto == "MESIF") {
             protocol = std::make_unique<MESIF::MESIFProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
-        }  else if (proto == "MESI_SMART_LRU") {
+        }  else if (proto == "SMART") {
             protocol = std::make_unique<MESI_SMART::MESISmartProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
         } else if (proto == "MOESI") {
             protocol = std::make_unique<MOESI::MOESIProtocol>(num_cores, csize, assoc, bsize, global_stats, stats);
         }
         else {
-            throw std::runtime_error("Unknown protocol: " + proto + "; \nAccepted: MESI DRAGON MESIF MESI_SMART_LRU MOESI");
+            throw std::runtime_error("Unknown protocol: " + proto + "; \nAccepted: MESI DRAGON MESIF SMART MOESI");
         }
     }
 
@@ -187,9 +190,14 @@ void BusReleaseEvent::execute(Simulator& sim) {
 void BusArbitrationEvent::execute(Simulator& sim) {
     if (sim.bus_busy || sim.bus_queue.empty()) return;
 
-    // FCFS + Tie-break Logic
     auto it = std::min_element(sim.bus_queue.begin(), sim.bus_queue.end(),
         [](const BusRequest& a, const BusRequest& b) {
+            if constexpr (READ_PRIORITY) {
+                bool a_is_read = (a.type == BusTransactionType::BUS_RD);
+                bool b_is_read = (b.type == BusTransactionType::BUS_RD);
+                if (a_is_read != b_is_read) return a_is_read;
+            }
+            // Fallback to FCFS
             if (a.arrival_time != b.arrival_time) return a.arrival_time < b.arrival_time;
             return a.core_id < b.core_id;
         });

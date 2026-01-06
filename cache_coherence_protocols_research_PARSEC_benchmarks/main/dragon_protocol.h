@@ -216,12 +216,13 @@ namespace Dragon {
         }
 
         void print_report(uint64_t total_cycles) override {
-            std::cout << "===== Dragon Protocol Simulation Results =====" << std::endl;
+            std::cout << "===== DRAGON Protocol Simulation Results =====" << std::endl;
             std::cout << "Overall Execution Cycles: " << total_cycles << std::endl;
             std::cout << "Total Data Traffic: " << g_stats.total_data_traffic_bytes << " bytes" << std::endl;
-            std::cout << "Total Updates on Bus: " << g_stats.total_invalidations << std::endl;
-            std::cout << "Bus Transactions: Rd=" << g_stats.bus_reads << " Update=" << g_stats.bus_upgrades 
-                      << " WB=" << g_stats.bus_writebacks << " C2C=" << g_stats.cache_to_cache_transfers << std::endl;
+            std::cout << "Total Invalidations: " << g_stats.total_invalidations << std::endl;
+            std::cout << "Bus Transactions: Rd=" << g_stats.bus_reads << " RdX=" << g_stats.bus_readx 
+                      << " Upgr=" << g_stats.bus_upgrades << " WB=" << g_stats.bus_writebacks 
+                      << " C2C=" << g_stats.cache_to_cache_transfers << std::endl;
 
             for (int i = 0; i < num_cores; ++i) {
                 std::cout << "\n--- Core " << i << " ---" << std::endl;
@@ -243,7 +244,7 @@ namespace Dragon {
                               << (100.0 * c_stats[i].private_accesses / total_acc) << "% | Shared=" 
                               << (100.0 * c_stats[i].shared_accesses / total_acc) << "%" << std::endl;
                 }
-                std::cout << "Updates Received: " << c_stats[i].invalidations_received << std::endl;
+                std::cout << "Invalidations RX: " << c_stats[i].invalidations_received << std::endl;
             }
         }
     };
