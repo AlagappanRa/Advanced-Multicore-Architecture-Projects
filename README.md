@@ -17,6 +17,7 @@ This repository contains two rigorous systems engineering projects focusing on t
 
 ### Objective
 To architect a trace-driven, discrete-event simulator capable of modeling memory consistency and bus arbitration in a multi-core processor environment. The goal was to analyze the trade-offs between **Invalidation-based (MESI)** and **Update-based (Dragon)** protocols under varying workload characteristics.
+![Architecture Diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/hardware_diagram.svg)
 
 ### System Architecture
 The simulator models a 4-core system with the following specifications:
@@ -24,6 +25,7 @@ The simulator models a 4-core system with the following specifications:
 *   **Memory Hierarchy:** Private L1 Data Caches (Write-Back/Write-Allocate) backed by Main Memory.
 *   **Interconnect:** Shared Bus with FIFO arbitration and atomic transactions.
 *   **Simulation Engine:** Custom C++ event queue handling `InstructionFetch`, `MemoryAccess`, `BusTransaction`, and `coherence` events.
+![Implementation diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.svg)
 
 ### Key Implementations
 I implemented three distinct protocols from scratch:
@@ -33,9 +35,6 @@ I implemented three distinct protocols from scratch:
 
 ### Performance Analysis
 We benchmarked the protocols using the **PARSEC Suite** (*Blackscholes, Bodytrack, Fluidanimate*).
-
-![Coherence Results](./assets/coherence_results.png)
-*(Figure 1: Comparative analysis of execution cycles across protocols. Note the massive speedup with Dragon.)*
 
 **Key Insight: The Update Paradox**
 Contrary to the intuition that invalidation protocols are superior for bandwidth conservation, the **Dragon protocol** achieved a **40x speedup** over MESI for the *Blackscholes* benchmark.
@@ -67,7 +66,7 @@ To design the optimal superscalar microarchitecture for the **SPEC95 "Go" benchm
 ### Key Findings
 *   **In-Order vs. Out-of-Order:** While Out-of-Order execution provided the highest raw performance (IPC = 0.93), a minimal **In-Order architecture** proved to be the most efficient design in terms of **Performance-per-Watt**, doubling the efficiency metric of the complex OOO designs.
 
-[**Read the Optimization Report**](./Processor-Pipeline-Optimization/Report_Pipeline_Optimization.pdf)
+[**Read the Optimization Report**](./superscalar_pipeline_optimisation_SPEC95_benchmark/Superscalar-Pipeline-Optimisation.pdf)
 
 ---
 
