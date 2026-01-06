@@ -42,7 +42,7 @@ Contrary to the intuition that invalidation protocols are superior for bandwidth
 *   **Why:** Although Dragon generated **35x more bus traffic** (due to continuous updates), it eliminated the expensive 100-cycle penalties associated with cache misses in MESI.
 *   **Conclusion:** In systems with sufficient bus bandwidth, update-based protocols can drastically outperform invalidation protocols for write-sharing workloads.
 
-[**Read the Full Technical Report**](./Cache-Coherence-Simulator/Report_Cache_Coherence.pdf)
+[**Read the Full Technical Report**](./cache_coherence_protocols_research_PARSEC_benchmarks/Cache-Coherence-Simulator-Report-CS4223.pdf)
 
 ---
 
