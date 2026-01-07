@@ -145,6 +145,6 @@ If you find these implementations useful for reference, please cite:
   author = {Alagappan Ramanathan},
   title = {Workload-Specific Microarchitectural Tuning and Cache Asymmetry Analysis},
   year = {2025},
-  note = {Design Space Exploration Case Study},
+  note = {Design Space Exploration Case Study & Discrete-Event Simulator (DES)},
   url = {https://github.com/AlagappanRa/Advanced-Multicore-Architecture-Projects}
 }
