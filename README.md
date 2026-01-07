@@ -27,7 +27,7 @@ The simulator models a 4-core SMP system with private L1 caches and a shared, at
 *   **Coherence:** Snooping logic with support for Cache-to-Cache transfers (17 cycles) vs. Main Memory fetches (101 cycles).
 
 ![Hardware Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/hardware_diagram.svg)
-<center> Figure 1: The simulated 4-core SMP architecture showing the shared bus bottleneck. </center>
+<p align="center"> Figure 1: The simulated 4-core SMP architecture showing the shared bus bottleneck. </p>
 
 #### 2. The Software Engine (Event-Driven)
 Unlike inefficient tick-based simulators that iterate through every clock cycle, this project implements a **Discrete Event Simulation** engine.
@@ -37,7 +37,7 @@ Unlike inefficient tick-based simulators that iterate through every clock cycle,
     *   **Priority Queue:** Manages the event timeline, resolving race conditions between Bus Arbitration and Instruction Fetching with strict priority levels.
 
 ![Software Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.png)
-<center> Figure 2: The Object-Oriented architecture separating the Simulation Engine (Plumbing) from the Protocol Logic (Strategy). </center>
+<p align="center"> Figure 2: The Object-Oriented architecture separating the Simulation Engine (Plumbing) from the Protocol Logic (Strategy). </p>
 
 ### Key Findings & Analysis
 
@@ -102,14 +102,14 @@ Based on these metrics, I removed all FPU resources and restricted Integer Multi
 **A. Design Space Exploration (IPC vs. Area)**
 
 ![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig1_design_space.png)
-<center> Figure 1: The Pareto frontier of processor configurations. The black dashed line represents the physical area constraint. </center><br>
+<p align="center"> Figure 1: The Pareto frontier of processor configurations. The black dashed line represents the physical area constraint. </p>
 
 The exploration revealed that the go benchmark is highly sensitive to instruction window size. Increasing the RUU from 16 to 32 entries yielded the most significant IPC gains for Out-of-Order (OoO) configurations. The optimal OoO design achieved an **IPC of 0.9376** at 59.28 area units.
 
 **B. The Efficiency Paradox (In-Order vs. Out-of-Order)**
 
 ![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig2_efficiency.png)
-<center> Figure 2: While Out-of-Order provides raw speed, In-Order designs dominate efficiency metrics. </center><br>
+<p align="center"> Figure 2: While Out-of-Order provides raw speed, In-Order designs dominate efficiency metrics. </p>
 
 A critical insight from this research is the non-linear relationship between complexity and efficiency.
 
@@ -120,8 +120,7 @@ A critical insight from this research is the non-linear relationship between com
 **C. Cache Asymmetry**
 
 ![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig3_cache_optimization.png)
-
-<center>Figure 3: Impact of L1 Cache partitioning on throughput.</center><br>
+<p align="center">Figure 3: Impact of L1 Cache partitioning on throughput.</p><br>
 
 Contrary to the "balanced cache" rule of thumb, this workload exhibits a massive preference for Instruction Cache capacity. A configuration skewed heavily toward I-Cache **(1024 sets I-Cache / 16 sets D-Cache)** outperformed balanced configurations by **29%**. This suggests the `go` benchmark suffers primarily from instruction fetch starvation rather than data cache misses.
 
