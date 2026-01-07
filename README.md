@@ -7,86 +7,143 @@
 > **Context:** Advanced systems coursework (CS4223 Multi-Core Architectures) at the National University of Singapore (NUS).
 
 ## Overview
-This repository contains two rigorous systems engineering projects focusing on the hardware-software interface. 
-1.  **Cycle-Accurate Cache Coherence Simulator:** A discrete-event simulator written in C++ to benchmark MESI, Dragon, and MOESI protocols.
-2.  **Superscalar Pipeline Optimization:** A design space exploration study optimizing processor microarchitecture for the SPEC95 benchmark suite under strict silicon area constraints.
+This repository contains two systems engineering projects focusing on the hardware-software interface. 
+1.  **Cache Coherence Simulator:** A high-performance, trace-driven C++ simulator used to analyze the design space of shared-memory multiprocessing.
+2.  **Superscalar Pipeline Optimization:** A design space exploration study maximizing IPC under strict silicon area constraints.
 
 ---
 
-## Project 1: Cycle-Accurate Cache Coherence Simulator
+## Cycle-Accurate Cache Coherence Simulator
 
 ### Objective
-To architect a trace-driven, discrete-event simulator capable of modeling memory consistency and bus arbitration in a multi-core processor environment. The goal was to analyze the trade-offs between **Invalidation-based (MESI)** and **Update-based (Dragon)** protocols under varying workload characteristics.
-
-![Architecture Diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/hardware_diagram.svg)
+To architect a configurable, trace-driven **Discrete-Event Simulator (DES)** capable of modeling memory consistency, bus arbitration, and cache state transitions in a multi-core Symmetric Multiprocessor (SMP) system. This project performs a **Design Space Exploration** across protocols (MESI, Dragon, MOESI, MESIF), cache capacities (1KB–8KB), and arbitration policies.
 
 ### System Architecture
-The simulator models a 4-core system with the following specifications:
-*   **Core Model:** Single-issue, blocking cache logic.
-*   **Memory Hierarchy:** Private L1 Data Caches (Write-Back/Write-Allocate) backed by Main Memory.
-*   **Interconnect:** Shared Bus with FIFO arbitration and atomic transactions.
-*   **Simulation Engine:** Custom C++ event queue handling `InstructionFetch`, `MemoryAccess`, `BusTransaction`, and `coherence` events.
 
-![Implementation diagram](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.svg)
+#### 1. The Hardware Model
+The simulator models a 4-core SMP system with private L1 caches and a shared, atomic bus.
+*   **Core Logic:** Blocking cache model (processor stalls on miss).
+*   **Interconnect:** Single-channel shared bus with configurable arbitration (FCFS vs. Read-Priority).
+*   **Coherence:** Snooping logic with support for Cache-to-Cache transfers (17 cycles) vs. Main Memory fetches (101 cycles).
 
-### Key Implementations
-I implemented three distinct protocols from scratch:
-1.  **MESI (Modified, Exclusive, Shared, Invalid):** Standard invalidation protocol. Silent E→M transitions implemented to reduce bus traffic.
-2.  **Dragon (Update-based):** A 4-state protocol (M, E, Sc, Sm) that broadcasts word-level updates rather than invalidating cache lines.
-3.  **MOESI (Optimization):** An extension of MESI introducing the **Owned (O)** state to allow dirty sharing and reduce main memory writebacks.
+![Hardware Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/hardware_diagram.svg)
+<center> Figure 1: The simulated 4-core SMP architecture showing the shared bus bottleneck. </center>
 
-### Performance Analysis
-We benchmarked the protocols using the **PARSEC Suite** (*Blackscholes, Bodytrack, Fluidanimate*).
+#### 2. The Software Engine (Event-Driven)
+Unlike inefficient tick-based simulators that iterate through every clock cycle, this project implements a **Discrete Event Simulation** engine.
+*   **Efficiency:** The global clock jumps instantly to the next significant event (e.g., `BusRelease` or `CoreUnblock`), allowing for the simulation of hundreds of millions of cycles in seconds.
+*   **Design Patterns:**
+    *   **Strategy Pattern:** Encapsulates protocol logic (`MESI`, `Dragon`, `MOESI`) behind a common interface, decoupling the simulation engine from the coherence rules.
+    *   **Priority Queue:** Manages the event timeline, resolving race conditions between Bus Arbitration and Instruction Fetching with strict priority levels.
 
-**Key Insight: The Update Paradox**
-Contrary to the intuition that invalidation protocols are superior for bandwidth conservation, the **Dragon protocol** achieved a **40x speedup** over MESI for the *Blackscholes* benchmark.
-*   **Why:** Although Dragon generated **35x more bus traffic** (due to continuous updates), it eliminated the expensive 100-cycle penalties associated with cache misses in MESI.
-*   **Conclusion:** In systems with sufficient bus bandwidth, update-based protocols can drastically outperform invalidation protocols for write-sharing workloads.
+![Software Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.png)
+<center> Figure 2: The Object-Oriented architecture separating the Simulation Engine (Plumbing) from the Protocol Logic (Strategy). </center>
 
-[**Read the Full Technical Report**](./cache_coherence_protocols_research_PARSEC_benchmarks/Cache-Coherence-Simulator-Report-CS4223.pdf)
+### Key Findings & Analysis
+
+Based on the quantitative analysis of the PARSEC benchmark suite (`blackscholes`, `bodytrack`, `fluidanimate`):
+
+#### 1. The Latency vs. Bandwidth Trade-off
+The **Dragon Protocol** (Update-based) consistently outperformed MESI in high-contention workloads (`fluidanimate`), achieving a **1.1% speedup**. However, this performance came at an exorbitant cost:
+*   **Traffic Explosion:** Dragon generated **35x more bus traffic** than MESI (124MB vs 3.5MB for *Blackscholes*).
+*   **Conclusion:** Dragon effectively trades bandwidth to lower latency (2-cycle updates vs 100-cycle invalidation misses). It is superior only when bus bandwidth is abundant.
+
+#### 2. Resilience to False Sharing
+When increasing the block size from 32B to 64B, MESI suffered from False Sharing (ping-ponging invalidations).
+*   **Dragon's Advantage:** Dragon proved architecturally robust. By broadcasting fine-grained **word-level updates (4 bytes)**, it decoupled the coherence granularity from the allocation granularity, preventing the traffic spikes seen in MESI.
+
+#### 3. Scheduling Matters: Read-Priority Arbitration
+Implementation of a scheduler optimization that prioritizes **Bus Reads (BusRd)** over Writes/Updates in the arbitration queue.
+*   **Result:** This yielded a measurable **1.6% speedup** on `bodytrack` (49.5M $\to$ 48.7M cycles).
+*   **Insight:** Reads are blocking operations that stall the CPU pipeline, whereas writes are often buffered. By allowing reads to "cut the line," the system unblocks cores faster, offering a "free" performance gain without the hardware cost of complex states like MOESI.
+
+#### 4. The Failure of "Smart" Replacement
+Implementation of a **Clean-Preferred Eviction Policy** intended to reduce writeback traffic by prioritizing the eviction of clean lines.
+*   **Result:** It successfully reduced writebacks by **33%**.
+*   **Impact:** It **degraded performance by ~30%**.
+*   **Insight:** "Clean" lines are often "Hot" lines (instructions/constants). Evicting them to save a background writeback penalty caused immediate foreground CPU stalls (Read Misses). **Hit Rate is the single most important metric for performance.**
+
+#### 5. The Coherence Wall
+Sensitivity analysis revealed that protocol choice is irrelevant if the cache is undersized.
+*   At **1KB cache size**, the system was dominated by capacity thrashing (~258M cycles).
+*   Increasing cache to **4KB** (fitting the working set) provided a **10x performance leap** (to ~21M cycles), far outweighing any gains from protocol micro-optimizations.
+
+### 6. Full Report
+[Read the Full Research Report](./cache_coherence_protocols_research_PARSEC_benchmarks/Cache-Coherence-Simulator-Report-CS4223.pdf)
 
 ---
 
-## Project 2: Superscalar Pipeline Optimization
+## Workload-Aware Microarchitectural Tuning for the Go Benchmark
+![alt text](https://img.shields.io/badge/Language-C%2B%2B%20%7C%20Python-blue)
+![alt text](https://img.shields.io/badge/Simulator-SimpleScalar-orange)
 
-### Objective
-To design the optimal superscalar microarchitecture for the **SPEC95 "Go" benchmark** (099.go), maximizing Instructions Per Cycle (IPC) while strictly adhering to a **Chip Area Constraint of 60 units**.
+### Abstract
+General-purpose processors often allocate significant die area to resources that remain underutilized by specific integer-heavy workloads. This research explores the microarchitectural design space for the **SPEC95** `099.go` **benchmark**, specifically targeting optimal instruction throughput under a strict **60-unit area constraint**. By employing profile-guided optimization and automated design space exploration (DSE), this project achieved a **29% performance increase** over baseline through cache asymmetry and identified a critical efficiency divergence: while Out-of-Order execution maximizes raw IPC, minimal In-Order architectures deliver **2x greater performance-per-watt**.
 
-### Methodology
-*   **Tool:** SimpleScalar (sim-outorder).
-*   **Constraints:** Area cost modeling based on register units (RUU), Load/Store Queues (LSQ), and Functional Units (ALU/FPU).
-*   **Strategy:** Automated design space exploration to prune suboptimal configurations.
+### 1. Research Methodology
+The design process followed a quantitative approach using the **SimpleScalar** simulation suite `(sim-outorder)`. The optimization strategy relied on Amdahl's Law applied to chip area: reducing resources for non-critical paths to reinvest in bottlenecked pipeline stages.
 
-### Optimization Strategy
-1.  **Workload Profiling:** Analysis of instruction distribution revealed that the "Go" benchmark had **0% Floating Point utilization**.
-2.  **Area Pruning:** I removed all Floating Point Units (FPU) and reduced Integer Multipliers to the minimum (1 unit), reclaiming 20+ area units.
-3.  **Resource Reallocation:** Reallocated the saved area budget to expand the **Instruction Window (RUU)** and **Load/Store Queue (LSQ)**, which were identified as the primary bottlenecks for IPC.
+1. **Workload Characterization**: Instruction profiling `(sim-profile)` to map the usage frequency of functional units.
+2. **Search Space Pruning**: Theoretical elimination of invalid configurations (e.g., Floating Point Units) to reduce simulation time by **96.8%** (from ~9000 to 288 configs).
+3. **Pareto Frontier Analysis**: Evaluating the trade-off curve between Area and Instructions Per Cycle (IPC).
+4. **Memory Subsystem Tuning**: Sensitivity analysis of L1 Instruction vs. Data cache sizes.
 
-![Pipeline Optimization](./assets/pipeline_results.png)
-*(Figure 2: Design space exploration showing the Pareto frontier of IPC vs. Area.)*
+### 2. Workload Analysis & Pruning
+Initial profiling of the go benchmark revealed extreme integer dominance:
 
-### Key Findings
-*   **In-Order vs. Out-of-Order:** While Out-of-Order execution provided the highest raw performance (IPC = 0.93), a minimal **In-Order architecture** proved to be the most efficient design in terms of **Performance-per-Watt**, doubling the efficiency metric of the complex OOO designs.
+- **Floating Point Usage: 0.00%** (20 area units of waste in default superscalar cores).
+- **Integer Operations:** Addition (32.6%) vs. Multiplication (0.07%).
+- **Memory Intensity:** High load-to-store ratio (2.7:1).
 
-[**Read the Optimization Report**](./superscalar_pipeline_optimisation_SPEC95_benchmark/Superscalar-Pipeline-Optimisation.pdf)
+**Optimization Action:** <br>
+Based on these metrics, I removed all FPU resources and restricted Integer Multipliers to a single unit. This reclaimed **~35% of the area budget**, allowing for aggressive expansion of the Register Update Unit (RUU) and Load/Store Queue (LSQ).
 
----
+### 3. Key Findings
+**A. Design Space Exploration (IPC vs. Area)**
 
-## Tech Stack
-*   **Languages:** C++17, Python (Analysis scripts), Bash
-*   **Tools:** SimpleScalar, GCC, Make
-*   **Concepts:** Memory Consistency Models, Race Conditions, Discrete-Event Simulation, Microarchitectural Tuning.
+![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig1_design_space.png)
+<center> Figure 1: The Pareto frontier of processor configurations. The black dashed line represents the physical area constraint. </center><br>
 
+The exploration revealed that the go benchmark is highly sensitive to instruction window size. Increasing the RUU from 16 to 32 entries yielded the most significant IPC gains for Out-of-Order (OoO) configurations. The optimal OoO design achieved an **IPC of 0.9376** at 59.28 area units.
+
+**B. The Efficiency Paradox (In-Order vs. Out-of-Order)**
+
+![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig2_efficiency.png)
+<center> Figure 2: While Out-of-Order provides raw speed, In-Order designs dominate efficiency metrics. </center><br>
+
+A critical insight from this research is the non-linear relationship between complexity and efficiency.
+
+- **Out-of-Order:** Prioritizes IPC (0.93) but consumes high area for hazard detection and reordering logic.
+- **In-Order:** Sacrifices ~45% IPC but reduces area by ~70%.
+- **Conclusion:** For power-constrained or embedded environments running go, a minimal In-Order core is superior, offering **0.032 IPC/Watt** vs **0.015 IPC/Watt** for the best OoO core.
+
+**C. Cache Asymmetry**
+
+![alt text](./superscalar_pipeline_optimisation_SPEC95_benchmark/scripts_and_data/fig3_cache_optimization.png)
+
+<center>Figure 3: Impact of L1 Cache partitioning on throughput.</center><br>
+
+Contrary to the "balanced cache" rule of thumb, this workload exhibits a massive preference for Instruction Cache capacity. A configuration skewed heavily toward I-Cache **(1024 sets I-Cache / 16 sets D-Cache)** outperformed balanced configurations by **29%**. This suggests the `go` benchmark suffers primarily from instruction fetch starvation rather than data cache misses.
+
+
+### 4. Technical Stack
+- Simulation: SimpleScalar 3.0 (Alpha ISA)
+- Analysis: Python (Pandas, Matplotlib for data visualization)
+- Scripting: Bash (Automated batch simulation)
+- Metrics: IPC, CPI, Area Cost Models (Transistor equivalent units), Efficiency (IPC/Area).
+
+### 5. Full report
+[Read the Full Research Report](./superscalar_pipeline_optimisation_SPEC95_benchmark/Superscalar-Pipeline-Optimisation.pdf)
 ---
 
 ## Citation
 If you find these implementations useful for reference, please cite:
 
 ```bibtex
-@misc{ramanathan2025multicore,
+@misc{ramanathan2025microarch,
   author = {Alagappan Ramanathan},
-  title = {Advanced Multi-Core Architecture and Cache Coherence Simulation},
+  title = {Workload-Specific Microarchitectural Tuning and Cache Asymmetry Analysis},
   year = {2025},
-  publisher = {GitHub},
-  journal = {CS4223 Coursework, National University of Singapore}
+  note = {Design Space Exploration Case Study},
+  url = {https://github.com/AlagappanRa/Advanced-Multicore-Architecture-Projects}
 }
