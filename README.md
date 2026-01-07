@@ -36,7 +36,7 @@ Unlike inefficient tick-based simulators that iterate through every clock cycle,
     *   **Strategy Pattern:** Encapsulates protocol logic (`MESI`, `Dragon`, `MOESI`) behind a common interface, decoupling the simulation engine from the coherence rules.
     *   **Priority Queue:** Manages the event timeline, resolving race conditions between Bus Arbitration and Instruction Fetching with strict priority levels.
 
-![Software Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.png)
+![Software Architecture](./cache_coherence_protocols_research_PARSEC_benchmarks/main/graphs/architecture_diagram_vector.svg)
 <p align="center"> Figure 2: The Object-Oriented architecture separating the Simulation Engine (Plumbing) from the Protocol Logic (Strategy). </p>
 
 ### Key Findings & Analysis
