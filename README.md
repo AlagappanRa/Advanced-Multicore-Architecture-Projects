@@ -9,7 +9,7 @@
 ## Overview
 This repository contains two systems engineering projects focusing on the hardware-software interface. 
 1.  **Cache Coherence Simulator:** A high-performance, trace-driven C++ simulator used to analyze the design space of shared-memory multiprocessing.
-2.  **Superscalar Pipeline Optimization:** A design space exploration study maximizing IPC under strict silicon area constraints.
+2.  **Workload-Aware Microarchitectural Tuning for the Go Benchmark** A design space exploration study maximizing IPC under strict silicon area constraints.
 
 ---
 
