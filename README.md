@@ -132,7 +132,7 @@ Contrary to the "balanced cache" rule of thumb, this workload exhibits a massive
 - Metrics: IPC, CPI, Area Cost Models (Transistor equivalent units), Efficiency (IPC/Area).
 
 ### 5. Full report
-[Read the Full Research Report](./superscalar_pipeline_optimisation_SPEC95_benchmark/Superscalar-Pipeline-Optimisation.pdf)
+[Read the Full Research Report](./superscalar_pipeline_optimisation_SPEC95_benchmark/Workload-Aware%20Microarchitectural%20Tuning%20for%20the%20Go%20Benchmark.pdf)
 
 ---
 
