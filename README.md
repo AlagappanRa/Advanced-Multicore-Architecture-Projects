@@ -4,7 +4,7 @@
 [![Domain](https://img.shields.io/badge/Domain-Computer%20Architecture%20%7C%20Systems-orange)]()
 [![Tools](https://img.shields.io/badge/Tools-SimpleScalar%20%7C%20Discrete%20Event%20Sim-green)]()
 
-> **Context:** Advanced systems coursework (CS4223 Multi-Core Architectures) at the National University of Singapore (NUS).
+> **Context:** Systems coursework (CS4223 Multi-Core Architectures) at the National University of Singapore (NUS).
 
 ## Overview
 This repository contains two systems engineering projects focusing on the hardware-software interface. 
